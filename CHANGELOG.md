@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Updated MiniScaffold.
 * Updated to .NET 5.
+* Changed module layout slightly.
 
 ## [0.3.0] - 2019/10/01
 * Ported to .NET Core 3 and MiniScaffold
