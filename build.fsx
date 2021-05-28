@@ -76,7 +76,7 @@ let gitRepoName = "FsGettextUtils"
 
 let gitHubRepoUrl = sprintf "https://github.com/%s/%s" gitOwner gitRepoName
 
-let releaseBranch = "master"
+let releaseBranch = "main"
 
 let tagFromVersionNumber versionNumber = sprintf "v%s" versionNumber
 
