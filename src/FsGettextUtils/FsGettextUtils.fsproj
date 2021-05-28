@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <Title>FsGettextUtils</Title>
-    <Description>FsGettextUtils does the thing!</Description>
+    <Description>F# utilities for working with file formats related to GNU gettext.</Description>
 
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
