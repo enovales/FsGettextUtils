@@ -5,22 +5,22 @@ open System.Runtime.CompilerServices
 
 [<assembly: AssemblyTitleAttribute("FsGettextUtils")>]
 [<assembly: AssemblyProductAttribute("FsGettextUtils")>]
-[<assembly: AssemblyVersionAttribute("0.4.0")>]
+[<assembly: AssemblyVersionAttribute("0.4.1")>]
 [<assembly: AssemblyMetadataAttribute("ReleaseDate","2021-05-28T00:00:00.0000000-07:00")>]
-[<assembly: AssemblyFileVersionAttribute("0.4.0")>]
-[<assembly: AssemblyInformationalVersionAttribute("0.4.0")>]
+[<assembly: AssemblyFileVersionAttribute("0.4.1")>]
+[<assembly: AssemblyInformationalVersionAttribute("0.4.1")>]
 [<assembly: AssemblyMetadataAttribute("ReleaseChannel","release")>]
-[<assembly: AssemblyMetadataAttribute("GitHash","501e056b22ed309fed03e3376e6e5f1c3c735972")>]
+[<assembly: AssemblyMetadataAttribute("GitHash","fcb273f9bc52480bd4718f9516a1d3ba324cfd8d")>]
 [<assembly: InternalsVisibleToAttribute("FsGettextUtils.Tests")>]
 do ()
 
 module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "FsGettextUtils"
     let [<Literal>] AssemblyProduct = "FsGettextUtils"
-    let [<Literal>] AssemblyVersion = "0.4.0"
+    let [<Literal>] AssemblyVersion = "0.4.1"
     let [<Literal>] AssemblyMetadata_ReleaseDate = "2021-05-28T00:00:00.0000000-07:00"
-    let [<Literal>] AssemblyFileVersion = "0.4.0"
-    let [<Literal>] AssemblyInformationalVersion = "0.4.0"
+    let [<Literal>] AssemblyFileVersion = "0.4.1"
+    let [<Literal>] AssemblyInformationalVersion = "0.4.1"
     let [<Literal>] AssemblyMetadata_ReleaseChannel = "release"
-    let [<Literal>] AssemblyMetadata_GitHash = "501e056b22ed309fed03e3376e6e5f1c3c735972"
+    let [<Literal>] AssemblyMetadata_GitHash = "fcb273f9bc52480bd4718f9516a1d3ba324cfd8d"
     let [<Literal>] InternalsVisibleTo = "FsGettextUtils.Tests"
