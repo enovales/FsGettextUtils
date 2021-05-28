@@ -509,6 +509,7 @@ let generateAssemblyInfo _ =
             AssemblyInfo.InformationalVersion latestEntry.AssemblyVersion
             AssemblyInfo.Metadata("ReleaseChannel", releaseChannel)
             AssemblyInfo.Metadata("GitHash", Git.Information.getCurrentSHA1(null))
+            AssemblyInfo.InternalsVisibleTo (projectName + ".Tests")
         ]
 
     let getProjectDetails projectPath =

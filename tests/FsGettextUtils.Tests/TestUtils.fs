@@ -1,7 +1,7 @@
 ﻿module TestUtils
 
 open FsCheck
-open FsGettextUtils.MoFile
+open FsGettextUtils
 open System.IO
 open System.Text
 

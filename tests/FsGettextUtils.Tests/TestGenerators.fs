@@ -1,7 +1,7 @@
 ﻿module TestGenerators
 
 open FsCheck
-open FsGettextUtils.MoFile
+open FsGettextUtils
 open System
 open System.Text
 open TestUtils

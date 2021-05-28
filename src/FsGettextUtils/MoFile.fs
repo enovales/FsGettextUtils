@@ -1,4 +1,4 @@
-module FsGettextUtils.MoFile
+module FsGettextUtils
 
 open System
 open System.IO
@@ -37,7 +37,7 @@ type MoString = {
 /// <summary>
 /// Discriminated union representing the state when reading an MO string.
 /// </summary>
-type internal ReadStringState = 
+type ReadStringState = 
     | ContextOrSingular
     | Singular
     | PluralForms
@@ -46,7 +46,7 @@ type internal ReadStringState =
 /// Accumulated state information while processing each character in the
 /// MO string.
 /// </summary>
-type internal ReadStringTrackingState = 
+type ReadStringTrackingState = 
     {
         state: ReadStringState
         acc: char array
@@ -57,7 +57,7 @@ type internal ReadStringTrackingState =
 /// <summary>
 /// Endian swapping function.
 /// </summary>
-let internal swapUint32(i: uint32) = 
+let swapUint32(i: uint32) = 
     let c0 = (i >>> 0) &&& 0xfful
     let c1 = (i >>> 8) &&& 0xfful
     let c2 = (i >>> 16) &&& 0xfful
@@ -72,7 +72,7 @@ let internal swapUint32(i: uint32) =
 /// </summary>
 /// <param name="br">the binary reader to use</param>
 /// <param name="needEndianSwap">whether endian swapping is needed</param>
-let internal readUint32WithSwap(br: BinaryReader, needEndianSwap: bool)() = 
+let readUint32WithSwap(br: BinaryReader, needEndianSwap: bool)() = 
     if needEndianSwap then
         swapUint32(br.ReadUInt32())
     else
@@ -116,7 +116,7 @@ let GetMoInfo(s: Stream) =
 /// <param name="e">the encoding to use</param>
 /// <param name="length">the length of the string to extract, in bytes</param>
 /// <param name="offset">the offset of the start of the string, in bytes</param>
-let internal readString(s: Stream, e: Encoding)(length: uint32, offset: uint32) = 
+let readString(s: Stream, e: Encoding)(length: uint32, offset: uint32) = 
     if (s.Seek(int64 offset, SeekOrigin.Begin) <> int64 offset) then
         failwith "couldn't seek to string origin"
 
@@ -175,7 +175,7 @@ let internal readString(s: Stream, e: Encoding)(length: uint32, offset: uint32) 
 /// <param name="e">the encoding to use for reading</param>
 /// <param name="ob">the array of lengths and offsets to use</param>
 /// <param name="indices">the indices in ob of the strings to extract</param>
-let internal getStringsFromOffsetBlocks(s: Stream, e: Encoding, ob: (uint32 * uint32) array)(indices: int seq) = 
+let getStringsFromOffsetBlocks(s: Stream, e: Encoding, ob: (uint32 * uint32) array)(indices: int seq) = 
     let getStringByIndex(i: int) = readString(s, e)(ob.[i])
     indices |> Seq.map getStringByIndex
 
@@ -206,7 +206,7 @@ let private contentTypeCharSetRegex = new Regex(@"(Content-Type\:).*(charset.*=\
 /// specified in the MIME headers passed in.
 /// </summary>
 /// <param name="h">the string containing the MIME headers to parse</param>
-let internal getEncodingNameFromMIMEHeader(h: string) = 
+let getEncodingNameFromMIMEHeader(h: string) = 
     let extractCharsetName l = 
         contentTypeCharSetRegex.Match(l).Groups.Item("charsetName").Value
 

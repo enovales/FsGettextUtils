@@ -15,8 +15,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="AssemblyInfoStatic.fs" />
-    <Compile Include="MoFile.fsi" />
     <Compile Include="MoFile.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

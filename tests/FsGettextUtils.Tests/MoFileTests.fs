@@ -15,11 +15,11 @@ let config50 = { FsCheckConfig.defaultConfig with maxTest = 50 }
 let internal fileHasDesiredStrings x = 
     let (safi, encoding) = x 
     use ms = createByteStreamForSAFI(safi, encoding)
-    let mi = MoFile.GetMoInfo(ms)
-    let originalStrings = MoFile.GetOriginalStrings(ms, mi, encoding)([| 0..mi.originalStringLengthsAndOffsets.Length - 1 |]) |> Array.ofSeq
-    let translatedStrings = MoFile.GetTranslatedStrings(ms, mi, encoding)([| 0..mi.translatedStringLengthsAndOffsets.Length - 1 |]) |> Array.ofSeq
-    let isOriginalStringEq(a: MoFile.MoString)(b: MoFile.MoString) = a = b
-    let isTranslatedStringEq(a: MoFile.MoString)(b: MoFile.MoString) = (a.singular = b.singular) && (a.pluralForms = b.pluralForms)
+    let mi = GetMoInfo(ms)
+    let originalStrings = GetOriginalStrings(ms, mi, encoding)([| 0..mi.originalStringLengthsAndOffsets.Length - 1 |]) |> Array.ofSeq
+    let translatedStrings = GetTranslatedStrings(ms, mi, encoding)([| 0..mi.translatedStringLengthsAndOffsets.Length - 1 |]) |> Array.ofSeq
+    let isOriginalStringEq(a: MoString)(b: MoString) = a = b
+    let isTranslatedStringEq(a: MoString)(b: MoString) = (a.singular = b.singular) && (a.pluralForms = b.pluralForms)
 
     Console.WriteLine("encoding name: {0}, body name: {1}, header name: {2}, web name: {3}", encoding.EncodingName, encoding.BodyName, encoding.HeaderName, encoding.WebName)
     
@@ -44,7 +44,7 @@ let tests =
         bw.Write(i)
 
         let br = new BinaryReader(new MemoryStream(ba |> Array.rev))
-        (MoFile.readUint32WithSwap(br, true)()) = i
+        (readUint32WithSwap(br, true)()) = i
 
     testPropertyWithConfig config10k "Ensure readUint32WithSwap doesn't modify the value if swapping is disabled" <|
       fun (i: uint32) ->
@@ -54,14 +54,14 @@ let tests =
         ms.Seek(int64 0, SeekOrigin.Begin) |> ignore
 
         let br = new BinaryReader(ms)
-        (MoFile.readUint32WithSwap(br, false)()) = i
+        (readUint32WithSwap(br, false)()) = i
 
     testPropertyWithConfig config50 "GetMoInfo handles an empty file" <|
       fun () ->
         let isFileConsideredEmpty x =
             let (safi, encoding) = x 
             use ms = createByteStreamForSAFI(safi, encoding)
-            let mi = MoFile.GetMoInfo(ms)
+            let mi = GetMoInfo(ms)
             (mi.originalStringLengthsAndOffsets.Length = 0) && (mi.translatedStringLengthsAndOffsets.Length = 0)
 
         let oatsGen = Gen.constant({ OriginalAndTranslatedStrings.originalStrings = [||]; translatedStrings = [||] })
@@ -133,20 +133,20 @@ let tests =
             let offsetBlocks = [| (uint32 shortLength, uint32 checkpointPos); (uint32 ms.Position, uint32 0) |]
             let expected = 
               [| 
-                { MoFile.MoString.context = None; MoFile.MoString.singular = "cd"; MoFile.MoString.pluralForms = [||]}
-                { MoFile.MoString.context = None; MoFile.MoString.singular = "abcd"; MoFile.MoString.pluralForms = [||] }
+                { MoString.context = None; MoString.singular = "cd"; MoString.pluralForms = [||]}
+                { MoString.context = None; MoString.singular = "abcd"; MoString.pluralForms = [||] }
               |]
-            let results = MoFile.getStringsFromOffsetBlocks(ms, encoding, offsetBlocks)([| 0; 1 |]) |> Array.ofSeq
+            let results = getStringsFromOffsetBlocks(ms, encoding, offsetBlocks)([| 0; 1 |]) |> Array.ofSeq
 
             expected = results
 
         Prop.forAll(Arb.fromGen(encodingGen)) readCorrect
 
     testCase "GetEncodingNameFromMIMEHeader returns None if no content type is found" <|
-      fun () -> Expect.equal None (MoFile.getEncodingNameFromMIMEHeader "") "getEncodingNameFromMIMEHeader of empty string is None"
+      fun () -> Expect.equal None (getEncodingNameFromMIMEHeader "") "getEncodingNameFromMIMEHeader of empty string is None"
 
     testCase "GetEncodingNameFromMIMEHeader returns Some(encodingName) if a content type is found" <|
-      fun () -> Expect.equal (Some "utf-8") (MoFile.getEncodingNameFromMIMEHeader "Content-Type: text/plain; charset=utf-8") "getEncodingNameFromMIMEHeader is extracted"
+      fun () -> Expect.equal (Some "utf-8") (getEncodingNameFromMIMEHeader "Content-Type: text/plain; charset=utf-8") "getEncodingNameFromMIMEHeader is extracted"
 
     testCase "GetEncodingNameFromMIMEHeader handles multiple line headers" <|
       fun () -> 
@@ -162,7 +162,7 @@ Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
           """
 
-        Expect.equal (Some "utf-8") (MoFile.getEncodingNameFromMIMEHeader content) "getEncodingNameFromMIMEHeader should handle multiple line header"
+        Expect.equal (Some "utf-8") (getEncodingNameFromMIMEHeader content) "getEncodingNameFromMIMEHeader should handle multiple line header"
 
     testPropertyWithConfig config10k "GetEncodingFromMIMEHeader returns the expected encoding" <|
       fun () -> 
@@ -183,7 +183,7 @@ Content-Transfer-Encoding: 8bit
         let g = Gen.frequency([| (7, validEncodingGen); (3, unknownEncodingGen) |])
         let test c = 
             let (bodyName, encodingOpt) = c
-            let encoding = MoFile.GetEncodingFromMIMEHeader("Content-Type: text/plain; charset=" + bodyName)
+            let encoding = GetEncodingFromMIMEHeader("Content-Type: text/plain; charset=" + bodyName)
 
             // There is no bijection between body name and encoding, due to some overlap
             // between legacy code pages and the ones explicitly designated for ISO encodings.

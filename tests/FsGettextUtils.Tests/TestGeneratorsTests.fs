@@ -2,7 +2,7 @@
 
 open Expecto
 open FsCheck
-open FsGettextUtils.MoFile
+open FsGettextUtils
 open System
 open System.IO
 open System.Text
@@ -54,7 +54,7 @@ let tests =
         let test x = 
             let (safi, encoding) = x
             use ms = TestUtils.createByteStreamForSAFI(safi, Encoding.ASCII)
-            let mi = FsGettextUtils.MoFile.GetMoInfo(ms)
+            let mi = GetMoInfo(ms)
 
             mi.originalStringLengthsAndOffsets.Length = safi.strings.originalStrings.Length
 
@@ -65,7 +65,7 @@ let tests =
         let test x = 
             let (safi, encoding) = x
             use ms = TestUtils.createByteStreamForSAFI(safi, Encoding.ASCII)
-            let mi = FsGettextUtils.MoFile.GetMoInfo(ms)
+            let mi = GetMoInfo(ms)
             mi.translatedStringLengthsAndOffsets.Length = safi.strings.translatedStrings.Length
 
         Prop.forAll(Arb.fromGenShrink(moFileWithoutHashTableGen, shrinkSAFIAndEncoding)) test
@@ -75,7 +75,7 @@ let tests =
         let test x = 
             let (safi, encoding) = x
             use ms = TestUtils.createByteStreamForSAFI(safi, Encoding.ASCII)
-            let mi = FsGettextUtils.MoFile.GetMoInfo(ms)
+            let mi = GetMoInfo(ms)
 
             let isWithinStream p = p < uint32 ms.Length
 
