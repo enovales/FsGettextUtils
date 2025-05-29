@@ -166,9 +166,10 @@ Content-Transfer-Encoding: 8bit
 
     testPropertyWithConfig config10k "GetEncodingFromMIMEHeader returns the expected encoding" <|
       fun () -> 
-        let validEncodingBodyNames = 
+        let validEncodingBodyNamesSet = 
             Encoding.GetEncodings() 
             |> Array.map (fun e -> e.GetEncoding().BodyName)
+            |> Set.ofArray
         let validEncodingGen = 
             gen {
                 let! ei = Gen.elements(Encoding.GetEncodings())
@@ -177,7 +178,7 @@ Content-Transfer-Encoding: 8bit
             }
         let unknownEncodingGen = 
             Arb.Default.String().Generator
-            |> Gen.filter (fun s -> not(validEncodingBodyNames |> Array.contains(s)))
+            |> Gen.filter (fun s -> not (validEncodingBodyNamesSet.Contains s))
             |> Gen.map (fun s -> (s, None))
 
         let g = Gen.frequency([| (7, validEncodingGen); (3, unknownEncodingGen) |])
