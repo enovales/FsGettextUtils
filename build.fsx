@@ -16,8 +16,6 @@ open Fake.IO.Globbing.Operators
 open Fake.Core.TargetOperators
 open Fake.Api
 open Fake.BuildServer
-open Fantomas
-open Fantomas.FakeHelpers
 
 BuildServer.install [
     GitHubActions.Installer
@@ -227,6 +225,9 @@ module dotnet =
     let fsharpAnalyzer optionConfig args =
         tool optionConfig "fsharp-analyzers" args
 
+    let fantomas optionConfig args =
+        tool optionConfig "fantomas" args
+
 module FSharpAnalyzers =
     type Arguments =
     | Project of string
@@ -295,7 +296,7 @@ let clean _ =
     ++ testsGlob
     |> Seq.collect(fun p ->
         ["bin";"obj"]
-        |> Seq.map(fun sp -> IO.Path.GetDirectoryName p @@ sp ))
+        |> Seq.map(fun sp -> IO.Path.GetDirectoryName(p: string) @@ sp ))
     |> Shell.cleanDirs
 
     [
@@ -304,7 +305,9 @@ let clean _ =
     |> Seq.iter Shell.rm
 
 let dotnetRestore _ =
-    [sln]
+    // Restore projects individually
+    !! srcGlob
+    ++ testsGlob
     |> Seq.map(fun dir -> fun () ->
         let args =
             [
@@ -398,14 +401,18 @@ let dotnetBuild ctx =
             sprintf "/p:PackageVersion=%s" latestEntry.NuGetVersion
             "--no-restore"
         ]
-    DotNet.build(fun c ->
-        { c with
-            Configuration = configuration (ctx.Context.AllExecutingTargets)
-            Common =
-                c.Common
-                |> DotNet.Options.withAdditionalArgs args
+    !! srcGlob
+    ++ testsGlob
+    |> Seq.iter (fun proj ->
+        DotNet.build(fun c ->
+            { c with
+                Configuration = configuration (ctx.Context.AllExecutingTargets)
+                Common =
+                    c.Common
+                    |> DotNet.Options.withAdditionalArgs args
 
-        }) sln
+            }) proj
+    )
 
 let fsharpAnalyzers _ =
     let argParser = ArgumentParser.Create<FSharpAnalyzers.Arguments>(programName = "fsharp-analyzers")
@@ -428,7 +435,7 @@ let fsharpAnalyzers _ =
 let dotnetTest ctx =
     let excludeCoverage =
         !! testsGlob
-        |> Seq.map IO.Path.GetFileNameWithoutExtension
+        |> Seq.map(fun p -> IO.Path.GetFileNameWithoutExtension(p: string))
         |> String.concat "|"
     let args =
         [
@@ -438,14 +445,17 @@ let dotnetTest ctx =
             sprintf "/p:AltCoverAssemblyExcludeFilter=%s" excludeCoverage
             "/p:AltCoverLocalSource=true"
         ]
-    DotNet.test(fun c ->
+    !! testsGlob
+    |> Seq.iter (fun proj ->
+        DotNet.test(fun c ->
 
-        { c with
-            Configuration = configuration (ctx.Context.AllExecutingTargets)
-            Common =
-                c.Common
-                |> DotNet.Options.withAdditionalArgs args
-            }) sln
+            { c with
+                Configuration = configuration (ctx.Context.AllExecutingTargets)
+                Common =
+                    c.Common
+                    |> DotNet.Options.withAdditionalArgs args
+                }) proj
+    )
 
 let generateCoverageReport _ =
     let coverageReports =
@@ -475,7 +485,7 @@ let watchTests _ =
     |> Seq.map(fun proj -> fun () ->
         dotnet.watch
             (fun opt ->
-                opt |> DotNet.Options.withWorkingDirectory (IO.Path.GetDirectoryName proj))
+                opt |> DotNet.Options.withWorkingDirectory (IO.Path.GetDirectoryName(proj: string)))
             "test"
             ""
         |> ignore
@@ -513,11 +523,11 @@ let generateAssemblyInfo _ =
         ]
 
     let getProjectDetails projectPath =
-        let projectName = IO.Path.GetFileNameWithoutExtension(projectPath)
+        let projectName = IO.Path.GetFileNameWithoutExtension(projectPath: string)
         (
             projectPath,
             projectName,
-            IO.Path.GetDirectoryName(projectPath),
+            IO.Path.GetDirectoryName(projectPath: string),
             (getAssemblyInfoAttributes projectName)
         )
 
@@ -605,22 +615,7 @@ let githubRelease _ =
     |> Async.RunSynchronously
 
 let formatCode _ =
-    [
-        srcCodeGlob
-        testsCodeGlob
-    ]
-    |> Seq.collect id
-    // Ignore AssemblyInfo
-    |> Seq.filter(fun f -> f.EndsWith("AssemblyInfo.fs") |> not)
-    |> formatFilesAsync FormatConfig.FormatConfig.Default
-    |> Async.RunSynchronously
-    |> Seq.iter(fun result ->
-        match result with
-        | Formatted(original, tempfile) ->
-            tempfile |> Shell.copyFile original
-            Trace.logfn "Formatted %s" original
-        | _ -> ()
-    )
+    dotnet.fantomas id "src tests"
 
 
 let buildDocs _ =
