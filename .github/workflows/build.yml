@@ -10,18 +10,15 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use .NET Core 2.1 SDK
-      uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '2.1.x'
-    - name: Use .NET Core 3.1 SDK
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
-    # Not specifying a version will attempt to install via global.json
-    - name: Use .NET Core global.json
-      uses: actions/setup-dotnet@v1
+        dotnet-version: |
+          6.0.x
+          8.0.x
+          9.0.x
 
     - name: Build
       if: runner.os != 'Windows'
@@ -29,13 +26,10 @@ jobs:
         chmod +x ./build.sh
         ./build.sh
       env:
-        # Work around https://github.com/actions/setup-dotnet/issues/29
-        DOTNET_ROOT: ${{ runner.tool_cache }}/dncs/${{ matrix.dotnet }}/x64
         CI: true
+
     - name: Build
       if: runner.os == 'Windows'
       run: ./build.cmd
       env:
-        # Work around https://github.com/actions/setup-dotnet/issues/29
-        DOTNET_ROOT: ${{ runner.tool_cache }}/dncs/${{ matrix.dotnet }}/x64
         CI: true
