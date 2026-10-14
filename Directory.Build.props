@@ -1,13 +1,15 @@
 <Project>
     <PropertyGroup>
-        <!-- summary is not migrated from project.json, but you can use the <Description> property for that if needed. -->
-        <PackageTags>f#, fsharp</PackageTags>
+        <PackageTags>f#, fsharp, gettext, i18n, internationalization, localization</PackageTags>
         <PackageProjectUrl>https://github.com/enovales/FsGettextUtils</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/enovales/FsGettextUtils/blob/master/LICENSE.md</PackageLicenseUrl>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <RepositoryType>git</RepositoryType>
         <Authors>enovales</Authors>
         <RepositoryUrl>https://github.com/enovales/FsGettextUtils</RepositoryUrl>
-        <!-- owners is not supported in MSBuild -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     </PropertyGroup>
 </Project>

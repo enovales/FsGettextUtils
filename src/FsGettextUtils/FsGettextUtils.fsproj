@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <IsTestProject>false</IsTestProject>
   </PropertyGroup>
-  <PropertyGroup>
-    <Title>FsGettextUtils</Title>
-    <Description>F# utilities for working with file formats related to GNU gettext.</Description>
-
-  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
-    
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <Title>FsGettextUtils</Title>
+    <Description>F# utilities for working with file formats related to GNU gettext.</Description>
+  </PropertyGroup>
+  
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="MoFile.fs" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
- 

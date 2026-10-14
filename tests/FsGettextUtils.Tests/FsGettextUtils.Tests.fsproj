@@ -2,13 +2,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFrameworks>net5.0</TargetFrameworks>
+        <TargetFrameworks>net8.0</TargetFrameworks>
         <GenerateProgramFile>false</GenerateProgramFile>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
     </PropertyGroup>
+    
     <ItemGroup>
         <ProjectReference Include="../../src/FsGettextUtils/FsGettextUtils.fsproj" />
+        <PackageReference Include="Expecto" Version="9.0.2" />
+        <PackageReference Include="Expecto.FsCheck" Version="9.0.2" />
+        <PackageReference Include="FsCheck" Version="2.14.2" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
+        <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.11.1" />
     </ItemGroup>
-        <ItemGroup>
+    
+    <ItemGroup>
         <Compile Include="AssemblyInfo.fs" />
         <Compile Include="TestUtils.fs" />
         <Compile Include="TestGenerators.fs" />
@@ -17,6 +26,4 @@
         <Compile Include="MoFileTests.fs" />
         <Compile Include="Main.fs" />
     </ItemGroup>
-    <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
-

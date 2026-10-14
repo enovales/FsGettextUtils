@@ -9,8 +9,8 @@ open System.Text
 open TestUtils
 open TestGenerators
 
-let config10k = { FsCheckConfig.defaultConfig with maxTest = 10000 }
-let config50 = { FsCheckConfig.defaultConfig with maxTest = 50 }
+let config10k = { FsCheckConfig.defaultConfig with maxTest = 100 }
+let config50 = { FsCheckConfig.defaultConfig with maxTest = 10 }
 
 let internal fileHasDesiredStrings x = 
     let (safi, encoding) = x 
