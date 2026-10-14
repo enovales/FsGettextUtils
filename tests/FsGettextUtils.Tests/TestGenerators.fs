@@ -6,7 +6,7 @@ open System
 open System.Text
 open TestUtils
 
-#if NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+#if NETCOREAPP
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance)
 #endif
 
@@ -66,9 +66,9 @@ let emptyMoStringGen =
 /// </summary>
 let nonEmptyMoStringGen = 
     moStringGen(
-        Arb.Default.StringWithoutNullChars().Generator |> Gen.map string |> Gen.map stripInvalidChars |> Gen.map Option.ofObj,
-        Arb.Default.StringWithoutNullChars().Generator |> Gen.map string |> Gen.filter(isNull >> not) |> Gen.map stripInvalidChars, 
-        Gen.arrayOf(Arb.Default.StringWithoutNullChars().Generator |> Gen.map string |> Gen.filter(isNull >> not) |> Gen.map stripInvalidChars)
+        Arb.Default.StringWithoutNullChars().Generator |> Gen.map (fun s -> stripInvalidChars(s.ToString())) |> Gen.map Option.ofObj,
+        Arb.Default.StringWithoutNullChars().Generator |> Gen.map (fun s -> stripInvalidChars(s.ToString())) |> Gen.filter (fun s -> s <> null && s <> ""), 
+        Gen.arrayOf(Arb.Default.StringWithoutNullChars().Generator |> Gen.map (fun s -> stripInvalidChars(s.ToString())) |> Gen.filter (fun s -> s <> null && s <> ""))
     )
 
 /// <summary>
